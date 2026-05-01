@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TTS Sound Generator</title>
+    <style>
+        body { font-family: sans-serif; background: #121212; color: white; display: flex; justify-content: center; padding: 20px; }
+        .card { background: #1e1e1e; padding: 20px; border-radius: 10px; width: 100%; max-width: 400px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+        textarea { width: 100%; height: 100px; margin-bottom: 15px; border-radius: 5px; border: none; padding: 10px; box-sizing: border-box; }
+        .control-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-size: 0.9em; }
+        input[type="range"] { width: 100%; }
+        button { width: 100%; padding: 10px; cursor: pointer; border: none; border-radius: 5px; background: #3f51b5; color: white; font-weight: bold; margin-bottom: 10px; }
+        button:hover { background: #5c6bc0; }
+        #downloadLink { display: none; text-align: center; color: #4caf50; text-decoration: none; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>TTS Audio Maker</h2>
+    <textarea id="textInput" placeholder="Gib hier deinen Text ein..."></textarea>
+
+    <div class="control-group">
+        <label>Gruselig-Faktor (Tiefe Stimme): <span id="valG">50</span></label>
+        <input type="range" id="creepyRange" min="1" max="100" value="50">
+    </div>
+
+    <div class="control-group">
+        <label>Roboter-Speed: <span id="valR">50</span></label>
+        <input type="range" id="robotRange" min="1" max="100" value="50">
+    </div>
+
+    <button onclick="playAudio()">Abspielen</button>
+    <p style="font-size: 0.8em; color: #888;">Hinweis: Der Download benötigt eine Server-Anbindung oder eine Library (wie MediaRecorder). Hier ist die Abspiel-Logik:</p>
+</div>
+
+<script>
+    const synth = window.speechSynthesis;
+    
+    function playAudio() {
+        if (synth.speaking) { synth.cancel(); }
+
+        const text = document.getElementById('textInput').value;
+        const utterThis = new SpeechSynthesisUtterance(text);
+        
+        // Werte von 1-100 auf API-Werte (0.1 bis 2.0) umrechnen
+        const creepyVal = document.getElementById('creepyRange').value;
+        const robotVal = document.getElementById('robotRange').value;
+
+        // Gruselig = Niedriger Pitch (Tonhöhe)
+        utterThis.pitch = (101 - creepyVal) / 50; 
+        
+        // Roboter/Speed = Rate
+        utterThis.rate = robotVal / 50;
+
+        utterThis.lang = 'de-DE';
+        synth.speak(utterThis);
+    }
+
+    // Anzeige-Updates
+    document.getElementById('creepyRange').oninput = function() { document.getElementById('valG').innerText = this.value; }
+    document.getElementById('robotRange').oninput = function() { document.getElementById('valR').innerText = this.value; }
+</script>
+
+</body>
+</html>
